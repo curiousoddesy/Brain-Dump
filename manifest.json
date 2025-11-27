@@ -1,0 +1,21 @@
+{
+  "short_name": "BrainDump",
+  "name": "Brain Dump: AI Task Manager",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#F5F5F7",
+  "background_color": "#F5F5F7",
+  "orientation": "any"
+}

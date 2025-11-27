@@ -1,0 +1,5 @@
+{
+  "name": "Brain Dump",
+  "description": "An Apple-inspired, minimalist Kanban board that uses Gemini AI to turn your brain dumps into structured, prioritized tasks. Designed for tracking dependencies and blockers effortlessly.",
+  "requestFramePermissions": []
+}
