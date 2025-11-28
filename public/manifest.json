@@ -1,0 +1,27 @@
+{
+  "short_name": "BrainDump",
+  "name": "Brain Dump: AI Task Manager",
+  "description": "AI-powered task management app",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#F5F5F7",
+  "background_color": "#F5F5F7",
+  "orientation": "any",
+  "categories": ["productivity", "utilities"],
+  "prefer_related_applications": false
+}
