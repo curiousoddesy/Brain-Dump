@@ -2,9 +2,23 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { AIParseResult, Priority, Status } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 export const parseTaskFromInput = async (input: string): Promise<AIParseResult> => {
+  if (!ai) {
+    // Return fallback when no API key is configured
+    return {
+      title: input.slice(0, 50) + (input.length > 50 ? '...' : ''),
+      description: input,
+      priority: Priority.MEDIUM,
+      status: Status.TODO,
+      tags: [],
+      dependencies: [],
+      blockers: []
+    };
+  }
+  
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
