@@ -100,9 +100,15 @@ export const subscribeToUserData = (
   callback: (tasks: Task[]) => void
 ) => {
   const userRef = doc(db, 'users', userId);
-  return onSnapshot(userRef, (doc) => {
-    if (doc.exists()) {
-      callback(doc.data().tasks || []);
+  return onSnapshot(
+    userRef, 
+    (doc) => {
+      if (doc.exists()) {
+        callback(doc.data().tasks || []);
+      }
+    },
+    (error) => {
+      console.error('Error in real-time subscription:', error);
     }
-  });
+  );
 };

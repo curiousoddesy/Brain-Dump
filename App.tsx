@@ -124,7 +124,15 @@ export default function App() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSynced, setLastSynced] = useState<Date | null>(null);
   const isInitialLoad = useRef(true);
+  const skipNextSync = useRef(false);
   const unsubscribeRef = useRef<(() => void) | null>(null);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tasksRef = useRef(tasks);
+  
+  // Keep tasksRef in sync
+  useEffect(() => {
+    tasksRef.current = tasks;
+  }, [tasks]);
 
   // Listen to auth state changes
   useEffect(() => {
@@ -136,10 +144,11 @@ export default function App() {
         try {
           const cloudTasks = await getUserData(authUser.uid);
           if (cloudTasks && cloudTasks.length > 0) {
+            skipNextSync.current = true;
             setTasks(cloudTasks.map(migrateTask));
           } else {
-            // First time user - upload local tasks
-            await saveUserData(authUser.uid, tasks);
+            // First time user - upload local tasks using ref for current value
+            await saveUserData(authUser.uid, tasksRef.current);
           }
           setLastSynced(new Date());
           
@@ -147,6 +156,7 @@ export default function App() {
           if (unsubscribeRef.current) unsubscribeRef.current();
           unsubscribeRef.current = subscribeToUserData(authUser.uid, (cloudTasks) => {
             if (!isInitialLoad.current) {
+              skipNextSync.current = true;
               setTasks(cloudTasks.map(migrateTask));
               setLastSynced(new Date());
             }
@@ -172,22 +182,39 @@ export default function App() {
     };
   }, []);
 
-  // Persistence: Save locally and to cloud
+  // Persistence: Save locally and to cloud (debounced)
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
       
-      // Sync to Firebase if logged in
+      // Skip sync if this update came from Firebase
+      if (skipNextSync.current) {
+        skipNextSync.current = false;
+        return;
+      }
+      
+      // Debounced sync to Firebase if logged in
       if (user && !isInitialLoad.current) {
-        setIsSyncing(true);
-        saveUserData(user.uid, tasks)
-          .then(() => setLastSynced(new Date()))
-          .catch(console.error)
-          .finally(() => setIsSyncing(false));
+        if (saveTimeoutRef.current) {
+          clearTimeout(saveTimeoutRef.current);
+        }
+        saveTimeoutRef.current = setTimeout(() => {
+          setIsSyncing(true);
+          saveUserData(user.uid, tasks)
+            .then(() => setLastSynced(new Date()))
+            .catch(console.error)
+            .finally(() => setIsSyncing(false));
+        }, 1000); // Debounce 1 second
       }
     } catch (e) {
       console.error("Failed to save tasks", e);
     }
+    
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
   }, [tasks, user]);
 
   const handleSignIn = async () => {
