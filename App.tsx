@@ -14,8 +14,9 @@ import {
   DragEndEvent,
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { Plus, BrainCircuit, Archive as ArchiveIcon, History } from 'lucide-react';
+import { Plus, BrainCircuit, History } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { User } from 'firebase/auth';
 
 import Column from './components/Column';
 import TaskCard from './components/TaskCard';
@@ -24,7 +25,16 @@ import Snackbar from './components/Snackbar';
 import ConfirmationModal from './components/ConfirmationModal';
 import ArchiveModal from './components/ArchiveModal';
 import Logo from './components/Logo';
+import UserMenu from './components/UserMenu';
 import { parseTaskFromInput } from './services/geminiService';
+import { 
+  signInWithGoogle, 
+  signOut, 
+  onAuthChange, 
+  saveUserData, 
+  getUserData,
+  subscribeToUserData 
+} from './services/firebase';
 import { Task, Status, ColumnType, Priority } from './types';
 
 const COLUMNS: ColumnType[] = [
@@ -109,14 +119,92 @@ export default function App() {
   const [showUndo, setShowUndo] = useState(false);
   const undoTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Persistence: Save to the new key whenever tasks change
+  // Auth state
+  const [user, setUser] = useState<User | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSynced, setLastSynced] = useState<Date | null>(null);
+  const isInitialLoad = useRef(true);
+  const unsubscribeRef = useRef<(() => void) | null>(null);
+
+  // Listen to auth state changes
+  useEffect(() => {
+    const unsubscribe = onAuthChange(async (authUser) => {
+      setUser(authUser);
+      if (authUser) {
+        // Load user data from Firebase
+        setIsSyncing(true);
+        try {
+          const cloudTasks = await getUserData(authUser.uid);
+          if (cloudTasks && cloudTasks.length > 0) {
+            setTasks(cloudTasks.map(migrateTask));
+          } else {
+            // First time user - upload local tasks
+            await saveUserData(authUser.uid, tasks);
+          }
+          setLastSynced(new Date());
+          
+          // Subscribe to real-time updates
+          if (unsubscribeRef.current) unsubscribeRef.current();
+          unsubscribeRef.current = subscribeToUserData(authUser.uid, (cloudTasks) => {
+            if (!isInitialLoad.current) {
+              setTasks(cloudTasks.map(migrateTask));
+              setLastSynced(new Date());
+            }
+            isInitialLoad.current = false;
+          });
+        } catch (error) {
+          console.error('Error loading user data:', error);
+        } finally {
+          setIsSyncing(false);
+        }
+      } else {
+        // User signed out - keep local data
+        if (unsubscribeRef.current) {
+          unsubscribeRef.current();
+          unsubscribeRef.current = null;
+        }
+        isInitialLoad.current = true;
+      }
+    });
+    return () => {
+      unsubscribe();
+      if (unsubscribeRef.current) unsubscribeRef.current();
+    };
+  }, []);
+
+  // Persistence: Save locally and to cloud
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+      
+      // Sync to Firebase if logged in
+      if (user && !isInitialLoad.current) {
+        setIsSyncing(true);
+        saveUserData(user.uid, tasks)
+          .then(() => setLastSynced(new Date()))
+          .catch(console.error)
+          .finally(() => setIsSyncing(false));
+      }
     } catch (e) {
       console.error("Failed to save tasks", e);
     }
-  }, [tasks]);
+  }, [tasks, user]);
+
+  const handleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error('Sign in failed:', error);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Sign out failed:', error);
+    }
+  };
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -311,6 +399,14 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-2">
+          <UserMenu
+            user={user}
+            onSignIn={handleSignIn}
+            onSignOut={handleSignOut}
+            isSyncing={isSyncing}
+            lastSynced={lastSynced}
+          />
+
           <button 
             onClick={() => setIsArchiveModalOpen(true)}
             className="p-2 hover:bg-gray-100 rounded-full text-gray-500 hover:text-indigo-600 transition-colors"
