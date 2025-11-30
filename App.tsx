@@ -315,6 +315,10 @@ export default function App() {
     }, 5000);
   };
 
+  const handleStatusChange = (id: string, newStatus: Status) => {
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
+  };
+
   const handleUndoArchive = () => {
     if (!lastArchivedId) return;
     
@@ -488,6 +492,7 @@ export default function App() {
                   title={col.title}
                   tasks={visibleTasks.filter((t) => t.status === col.id)}
                   onArchiveTask={handleArchiveTask}
+                  onStatusChange={handleStatusChange}
                   onClearColumn={col.id === Status.DONE ? () => setIsClearDoneModalOpen(true) : undefined}
                 />
               ))}

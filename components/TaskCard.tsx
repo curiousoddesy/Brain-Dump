@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Task, Priority, Status } from '../types';
-import { Archive, AlertCircle, Tag, Clock, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import { Archive, AlertCircle, Tag, Clock, ShieldAlert, CheckCircle2, Play, Ban, Check } from 'lucide-react';
 
 interface TaskCardProps {
   task: Task;
   onArchive: (id: string) => void;
+  onStatusChange?: (id: string, status: Status) => void;
   isOverlay?: boolean;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, isOverlay }) => {
+const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, onStatusChange, isOverlay }) => {
   const {
     attributes,
     listeners,
@@ -27,6 +28,23 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, isOverlay }) => {
 
   const isDone = task.status === Status.DONE;
   const [showDoneAnimation, setShowDoneAnimation] = useState(false);
+  const [showContextMenu, setShowContextMenu] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (cardRef.current && !cardRef.current.contains(e.target as Node)) {
+        setShowContextMenu(false);
+      }
+    };
+    if (showContextMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showContextMenu]);
 
   // Trigger visual pop when task enters DONE state
   useEffect(() => {
@@ -36,6 +54,49 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, isOverlay }) => {
       return () => clearTimeout(timer);
     }
   }, [isDone, isOverlay]);
+
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const rect = cardRef.current?.getBoundingClientRect();
+    if (rect) {
+      setMenuPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    }
+    setShowContextMenu(true);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    longPressTimer.current = setTimeout(() => {
+      const rect = cardRef.current?.getBoundingClientRect();
+      if (rect) {
+        setMenuPosition({ x: touch.clientX - rect.left, y: touch.clientY - rect.top });
+      }
+      setShowContextMenu(true);
+    }, 500);
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleTouchMove = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleStatusChange = (newStatus: Status) => {
+    if (onStatusChange) {
+      onStatusChange(task.id, newStatus);
+    }
+    setShowContextMenu(false);
+  };
 
   const priorityColors = {
     [Priority.HIGH]: 'bg-red-100 text-red-700 border-red-200',
@@ -53,12 +114,26 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, isOverlay }) => {
     );
   }
 
+  const menuItems = [
+    { status: Status.IN_PROGRESS, label: 'Move to In Progress', icon: Play, color: 'text-blue-600', bg: 'hover:bg-blue-50' },
+    { status: Status.BLOCKED, label: 'Move to Blocked', icon: Ban, color: 'text-amber-600', bg: 'hover:bg-amber-50' },
+    { status: Status.DONE, label: 'Move to Done', icon: Check, color: 'text-green-600', bg: 'hover:bg-green-50' },
+  ].filter(item => item.status !== task.status);
+
+
   return (
     <div
-      ref={setNodeRef}
+      ref={(node) => {
+        setNodeRef(node);
+        (cardRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      }}
       style={style}
       {...attributes}
       {...listeners}
+      onContextMenu={handleContextMenu}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchMove={handleTouchMove}
       className={`group bg-white p-4 rounded-xl shadow-sm border hover:shadow-md transition-all duration-300 active:scale-[0.98] relative 
         ${isOverlay 
           ? 'cursor-hand-grab rotate-2 scale-105 shadow-2xl ring-2 ring-indigo-500/20 border-indigo-500/40 z-50 !opacity-100' 
@@ -71,6 +146,41 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, isOverlay }) => {
         ${showDoneAnimation ? 'scale-105 ring-4 ring-green-400/20 z-10' : ''}
       `}
     >
+      {/* Context Menu */}
+      {showContextMenu && (
+        <div 
+          className="absolute z-50 bg-white rounded-xl shadow-xl border border-gray-200 py-1 min-w-[180px] animate-in fade-in zoom-in-95 duration-150"
+          style={{ 
+            left: Math.min(menuPosition.x, 100), 
+            top: menuPosition.y,
+            transform: 'translateY(-50%)'
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {menuItems.map((item) => (
+            <button
+              key={item.status}
+              onClick={() => handleStatusChange(item.status)}
+              className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 ${item.color} ${item.bg} transition-colors`}
+            >
+              <item.icon size={16} />
+              {item.label}
+            </button>
+          ))}
+          <div className="border-t border-gray-100 my-1" />
+          <button
+            onClick={() => {
+              onArchive(task.id);
+              setShowContextMenu(false);
+            }}
+            className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 text-red-600 hover:bg-red-50 transition-colors"
+          >
+            <Archive size={16} />
+            Archive
+          </button>
+        </div>
+      )}
+
       {/* Visual completion indicator overlay on pop */}
       {showDoneAnimation && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-[1px] rounded-xl z-20 animate-pulse">
@@ -85,7 +195,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, isOverlay }) => {
         
         <button 
           onClick={(e) => {
-            e.stopPropagation(); // Prevent drag start
+            e.stopPropagation();
             onArchive(task.id);
           }}
           className="text-gray-300 hover:text-indigo-500 transition-colors p-1 -mr-1 -mt-1 z-10"
@@ -102,6 +212,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, isOverlay }) => {
       <p className={`text-gray-500 text-xs line-clamp-3 mb-3 leading-relaxed ${isDone ? 'opacity-60' : ''}`}>
         {task.description}
       </p>
+
 
       {/* Dependencies and Blockers Section */}
       {(task.blockers?.length > 0 || task.dependencies?.length > 0) && (

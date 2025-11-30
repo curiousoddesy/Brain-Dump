@@ -11,10 +11,11 @@ interface ColumnProps {
   title: string;
   tasks: Task[];
   onArchiveTask: (id: string) => void;
+  onStatusChange: (id: string, status: Status) => void;
   onClearColumn?: () => void;
 }
 
-const Column: React.FC<ColumnProps> = ({ id, title, tasks, onArchiveTask, onClearColumn }) => {
+const Column: React.FC<ColumnProps> = ({ id, title, tasks, onArchiveTask, onStatusChange, onClearColumn }) => {
   const { setNodeRef, isOver } = useDroppable({
     id: id,
   });
@@ -88,7 +89,7 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, onArchiveTask, onClea
       >
         <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} onArchive={onArchiveTask} />
+            <TaskCard key={task.id} task={task} onArchive={onArchiveTask} onStatusChange={onStatusChange} />
           ))}
         </SortableContext>
 
