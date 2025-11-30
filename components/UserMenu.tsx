@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { User } from 'firebase/auth';
-import { LogIn, LogOut, Cloud, Crown } from 'lucide-react';
+import { LogIn, LogOut, Cloud, Crown, Bell } from 'lucide-react';
 
 interface UserMenuProps {
   user: User | null;
@@ -106,6 +106,17 @@ const UserMenu: React.FC<UserMenuProps> = ({
                 )}
               </div>
             </div>
+
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                alert('Notifications coming soon!');
+              }}
+              className="w-full px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors"
+            >
+              <Bell size={16} />
+              Notifications
+            </button>
 
             <button
               onClick={() => {
