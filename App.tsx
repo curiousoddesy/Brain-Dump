@@ -316,7 +316,15 @@ export default function App() {
   };
 
   const handleStatusChange = (id: string, newStatus: Status) => {
+    const task = tasks.find(t => t.id === id);
+    const wasNotDone = task && task.status !== Status.DONE;
+    
     setTasks(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
+    
+    // Trigger confetti when moving to Done
+    if (newStatus === Status.DONE && wasNotDone) {
+      triggerConfetti();
+    }
   };
 
   const handleUndoArchive = () => {
