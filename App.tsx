@@ -24,9 +24,11 @@ import AIInputModal from './components/AIInputModal';
 import Snackbar from './components/Snackbar';
 import ConfirmationModal from './components/ConfirmationModal';
 import ArchiveModal from './components/ArchiveModal';
+import UpdateModal from './components/UpdateModal';
 import Logo from './components/Logo';
 import UserMenu from './components/UserMenu';
 import { parseTaskFromInput } from './services/geminiService';
+import { APP_VERSION, CHANGELOG } from './version';
 import { 
   signInWithGoogle, 
   signOut, 
@@ -113,6 +115,21 @@ export default function App() {
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isClearDoneModalOpen, setIsClearDoneModalOpen] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+
+  // Check for app updates
+  useEffect(() => {
+    const LAST_VERSION_KEY = 'braindump-last-version';
+    const lastVersion = localStorage.getItem(LAST_VERSION_KEY);
+    
+    if (lastVersion && lastVersion !== APP_VERSION) {
+      // New version detected, show update modal
+      setShowUpdateModal(true);
+    }
+    
+    // Save current version
+    localStorage.setItem(LAST_VERSION_KEY, APP_VERSION);
+  }, []);
 
   // Undo state
   const [lastArchivedId, setLastArchivedId] = useState<string | null>(null);
@@ -556,6 +573,13 @@ export default function App() {
         archivedTasks={archivedTasks}
         onRestore={handleRestoreTask}
         onDeleteForever={handleDeleteForever}
+      />
+
+      <UpdateModal
+        isOpen={showUpdateModal}
+        onClose={() => setShowUpdateModal(false)}
+        version={APP_VERSION}
+        changes={CHANGELOG}
       />
     </div>
   );
