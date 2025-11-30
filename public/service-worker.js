@@ -1,5 +1,4 @@
-
-const CACHE_NAME = 'braindump-v3';
+const CACHE_NAME = 'braindump-v4';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -7,8 +6,9 @@ const urlsToCache = [
   '/logo.png'
 ];
 
-// Install SW and cache static assets
+// Install SW - skip waiting to activate immediately
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -17,67 +17,79 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Intercept network requests
+// Network-first strategy for HTML and JS files, cache-first for assets
 self.addEventListener('fetch', (event) => {
-  // Skip cross-origin requests like Google GenAI API for caching logic to avoid opaque response issues
   if (event.request.url.startsWith('chrome-extension')) return;
+  
+  const url = new URL(event.request.url);
+  
+  // Network-first for HTML and JS (always get latest)
+  if (event.request.mode === 'navigate' || 
+      url.pathname.endsWith('.html') || 
+      url.pathname.includes('/assets/')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          // Cache the new version
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+          return response;
+        })
+        .catch(() => {
+          // Fallback to cache if offline
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
 
+  // Cache-first for other assets (images, fonts, etc.)
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // Cache hit - return response
-        if (response) {
+        if (response) return response;
+        
+        return fetch(event.request).then((response) => {
+          if (!response || response.status !== 200) return response;
+          
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
           return response;
-        }
-
-        // Clone the request because it's a stream
-        const fetchRequest = event.request.clone();
-
-        return fetch(fetchRequest).then(
-          (response) => {
-            // Check if we received a valid response
-            if(!response || response.status !== 200 || response.type !== 'basic') {
-              // For CDN assets (cors/opaque), we still return them but might not cache them easily 
-              // without specific CORS headers. For simplicity in this dev environment, 
-              // we return the fetch response directly for external resources.
-              return response;
-            }
-
-            // Clone the response
-            const responseToCache = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          }
-        );
+        });
       })
-    );
+  );
 });
 
-// Update SW and delete old caches
+// Activate and claim clients immediately
 self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
+          if (cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
         })
       );
     }).then(() => {
-      // Take control of all clients immediately
+      // Take control immediately and reload all clients
       return self.clients.claim();
+    }).then(() => {
+      // Notify all clients to reload
+      return self.clients.matchAll().then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({ type: 'SW_UPDATED' });
+        });
+      });
     })
   );
 });
 
-// Skip waiting to activate new service worker immediately
+// Handle skip waiting message
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
