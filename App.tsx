@@ -301,7 +301,7 @@ export default function App() {
   const archivedTasks = tasks.filter(t => t.isArchived);
 
   return (
-    <div className="h-screen bg-[#F5F5F7] text-gray-900 flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-[#F5F5F7] text-gray-900 flex flex-col">
       
       {/* Top Navigation Bar */}
       <header className="h-14 bg-white/90 backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-4 z-10 shrink-0 transition-all duration-200">

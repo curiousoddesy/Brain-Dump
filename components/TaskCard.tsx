@@ -61,8 +61,8 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, isOverlay }) => {
       {...listeners}
       className={`group bg-white p-4 rounded-xl shadow-sm border hover:shadow-md transition-all duration-300 active:scale-[0.98] relative 
         ${isOverlay 
-          ? 'cursor-grabbing rotate-2 scale-105 shadow-2xl ring-2 ring-indigo-500/20 border-indigo-500/40 z-50 !opacity-100' 
-          : 'cursor-grab'
+          ? 'cursor-hand-grab rotate-2 scale-105 shadow-2xl ring-2 ring-indigo-500/20 border-indigo-500/40 z-50 !opacity-100' 
+          : 'cursor-hand'
         }
         ${isDone 
             ? 'border-green-200/60 bg-green-50/20' 
