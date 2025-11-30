@@ -1,19 +1,19 @@
 {
-  "short_name": "BrainDump",
-  "name": "Brain Dump: AI Task Manager",
+  "short_name": "Brain Dump",
+  "name": "Brain Dump",
   "description": "AI-powered task management app",
   "icons": [
     {
       "src": "/logo.png",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/logo.png",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
   "start_url": "/",
