@@ -18,13 +18,13 @@ import {
 import { Task } from '../types';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC59HV4_pYHNebXpPlugXDTsFqtwmNaSOk",
-  authDomain: "brain-dump-f2e60.firebaseapp.com",
-  projectId: "brain-dump-f2e60",
-  storageBucket: "brain-dump-f2e60.firebasestorage.app",
-  messagingSenderId: "147479928446",
-  appId: "1:147479928446:web:cf7be0d1d44d832501c22f",
-  measurementId: "G-1BDSVM3YF6"
+  apiKey: "AIzaSyAMgX32KoC8XEcIvf1qtA1c32SaVc3e8Go",
+  authDomain: "braindumpai-2025.firebaseapp.com",
+  projectId: "braindumpai-2025",
+  storageBucket: "braindumpai-2025.firebasestorage.app",
+  messagingSenderId: "375615837910",
+  appId: "1:375615837910:web:614feb8cc7fbc397cd9b77",
+  measurementId: "G-M08QBH5G5F"
 };
 
 const app = initializeApp(firebaseConfig);
