@@ -77,53 +77,59 @@ const UserMenu: React.FC<UserMenuProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
-          <div className="px-4 py-3 border-b border-gray-100">
-            <p className="font-medium text-sm text-gray-900 truncate">
-              {user.displayName || 'User'}
-            </p>
-            <p className="text-xs text-gray-500 truncate">{user.email}</p>
-          </div>
-          
-          <div className="px-4 py-2 border-b border-gray-100">
-            <div className="flex items-center gap-2 text-xs text-gray-500">
-              {isSyncing ? (
-                <>
-                  <Cloud size={12} className="text-indigo-500 animate-pulse" />
-                  <span>Syncing...</span>
-                </>
-              ) : (
-                <>
-                  <Cloud size={12} className="text-green-500" />
-                  <span>Synced {formatLastSynced()}</span>
-                </>
-              )}
+        <>
+          {/* Backdrop for mobile */}
+          <div 
+            className="fixed inset-0 bg-black/20 z-40 sm:hidden" 
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-16 sm:top-auto sm:mt-2 w-auto sm:w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+            <div className="px-4 py-3 border-b border-gray-100">
+              <p className="font-medium text-sm text-gray-900 truncate">
+                {user.displayName || 'User'}
+              </p>
+              <p className="text-xs text-gray-500 truncate">{user.email}</p>
             </div>
+            
+            <div className="px-4 py-2 border-b border-gray-100">
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                {isSyncing ? (
+                  <>
+                    <Cloud size={12} className="text-indigo-500 animate-pulse" />
+                    <span>Syncing...</span>
+                  </>
+                ) : (
+                  <>
+                    <Cloud size={12} className="text-green-500" />
+                    <span>Synced {formatLastSynced()}</span>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                alert('Premium subscription coming soon!');
+              }}
+              className="w-full px-4 py-2.5 text-left text-sm text-indigo-600 hover:bg-indigo-50 flex items-center gap-2 transition-colors"
+            >
+              <Crown size={16} />
+              Get Premium
+            </button>
+
+            <button
+              onClick={() => {
+                onSignOut();
+                setIsOpen(false);
+              }}
+              className="w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors"
+            >
+              <LogOut size={16} />
+              Sign Out
+            </button>
           </div>
-
-          <button
-            onClick={() => {
-              setIsOpen(false);
-              // TODO: Implement premium subscription flow
-              alert('Premium subscription coming soon!');
-            }}
-            className="w-full px-4 py-2 text-left text-sm text-indigo-600 hover:bg-indigo-50 flex items-center gap-2 transition-colors"
-          >
-            <Crown size={16} />
-            Get Premium
-          </button>
-
-          <button
-            onClick={() => {
-              onSignOut();
-              setIsOpen(false);
-            }}
-            className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors"
-          >
-            <LogOut size={16} />
-            Sign Out
-          </button>
-        </div>
+        </>
       )}
     </div>
   );
