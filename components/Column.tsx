@@ -44,9 +44,9 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, onArchiveTask, onClea
     /* 
       Responsive Layout:
       Mobile: w-full, h-auto (stacks vertically)
-      Laptop (md): w-96 (fixed width), h-full (fills height to allow internal scrolling)
+      Laptop (md): flex-1 width, auto height (grows with content)
     */
-    <div className="flex flex-col shrink-0 w-full md:flex-1 md:min-w-0 md:h-full md:max-h-full transition-all duration-300">
+    <div className="flex flex-col shrink-0 w-full md:flex-1 md:min-w-[280px] md:max-w-[400px] transition-all duration-300">
       <div className={`flex items-center justify-between mb-3 px-2 shrink-0`}>
         <h2 className={`font-semibold text-sm tracking-wide flex items-center gap-2 ${getHeaderColor()}`}>
           <span className={`w-2 h-2 rounded-full shadow-sm ${id === Status.BLOCKED ? 'bg-amber-500' :
@@ -75,8 +75,7 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, onArchiveTask, onClea
 
       {/* 
         Task List Container:
-        Mobile: Auto height
-        Laptop (md): Flex-1 with overflow-y-auto (Independent column scrolling)
+        Auto height - grows with content
       */}
       <div
         ref={setNodeRef}
@@ -85,7 +84,6 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, onArchiveTask, onClea
             ? 'bg-indigo-50/90 border-2 border-dashed border-indigo-400/60 shadow-[inset_0_0_12px_rgba(99,102,241,0.1)]'
             : `${getBgColor()} border border-white/50`
           }
-          md:flex-1 md:overflow-y-auto custom-scrollbar
         `}
       >
         <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>

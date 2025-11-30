@@ -334,10 +334,10 @@ export default function App() {
       {/* 
         Layout Strategy:
         - Mobile: Vertical scrolling container (overflow-y-auto).
-        - Laptop: Horizontal scrolling container (overflow-x-auto, overflow-y-hidden).
+        - Laptop: Horizontal layout with internal column scrolling, page scrolls if needed.
       */}
-      <main className="flex-1 h-full overflow-hidden relative">
-        <div className="absolute inset-0 overflow-y-auto md:overflow-hidden scroll-smooth bg-[#F5F5F7] custom-scrollbar">
+      <main className="flex-1 overflow-auto relative">
+        <div className="min-h-full scroll-smooth bg-[#F5F5F7] custom-scrollbar">
           <DndContext
             sensors={sensors}
             collisionDetection={closestCorners}
@@ -348,7 +348,7 @@ export default function App() {
             {/* 
                Board Content:
                - Mobile: flex-col, auto height (stacks)
-               - Laptop: flex-row, full height, full width (fits screen)
+               - Laptop: flex-row, auto height, scrollable
             */}
             <div className="
               flex flex-col md:flex-row 
@@ -356,7 +356,7 @@ export default function App() {
               w-full
               px-4 pt-4 pb-28 md:pb-4 md:px-6
               gap-6 md:gap-8 
-              items-start md:items-stretch
+              items-start
             ">
               {COLUMNS.map((col) => (
                 <Column
