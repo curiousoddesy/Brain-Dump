@@ -18,13 +18,13 @@ import {
 import { Task } from '../types';
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+  apiKey: "AIzaSyAMgX32KoC8XEcIvf1qtA1c32SaVc3e8Go",
+  authDomain: "braindumpai-2025.firebaseapp.com",
+  projectId: "braindumpai-2025",
+  storageBucket: "braindumpai-2025.firebasestorage.app",
+  messagingSenderId: "375615837910",
+  appId: "1:375615837910:web:614feb8cc7fbc397cd9b77",
+  measurementId: "G-M08QBH5G5F"
 };
 
 const app = initializeApp(firebaseConfig);
