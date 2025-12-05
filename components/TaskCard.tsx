@@ -100,9 +100,9 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, onStatusChange, is
   };
 
   const priorityColors = {
-    [Priority.HIGH]: 'bg-red-100 text-red-700 border-red-200',
-    [Priority.MEDIUM]: 'bg-orange-100 text-orange-700 border-orange-200',
-    [Priority.LOW]: 'bg-blue-100 text-blue-700 border-blue-200',
+    [Priority.HIGH]: 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800',
+    [Priority.MEDIUM]: 'bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800',
+    [Priority.LOW]: 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800',
   };
 
   if (isDragging) {
@@ -110,15 +110,15 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, onStatusChange, is
       <div
         ref={setNodeRef}
         style={style}
-        className="opacity-50 bg-indigo-50/50 p-4 rounded-xl border-2 border-dashed border-indigo-300 h-[140px]"
+        className="opacity-50 bg-indigo-50/50 dark:bg-indigo-900/30 p-4 rounded-xl border-2 border-dashed border-indigo-300 dark:border-indigo-600 h-[140px]"
       />
     );
   }
 
   const menuItems = [
-    { status: Status.IN_PROGRESS, label: 'Move to In Progress', icon: Play, color: 'text-blue-600', bg: 'hover:bg-blue-50' },
-    { status: Status.BLOCKED, label: 'Move to Blocked', icon: Ban, color: 'text-amber-600', bg: 'hover:bg-amber-50' },
-    { status: Status.DONE, label: 'Move to Done', icon: Check, color: 'text-green-600', bg: 'hover:bg-green-50' },
+    { status: Status.IN_PROGRESS, label: 'Move to In Progress', icon: Play, color: 'text-blue-600 dark:text-blue-400', bg: 'hover:bg-blue-50 dark:hover:bg-blue-900/50' },
+    { status: Status.BLOCKED, label: 'Move to Blocked', icon: Ban, color: 'text-amber-600 dark:text-amber-400', bg: 'hover:bg-amber-50 dark:hover:bg-amber-900/50' },
+    { status: Status.DONE, label: 'Move to Done', icon: Check, color: 'text-green-600 dark:text-green-400', bg: 'hover:bg-green-50 dark:hover:bg-green-900/50' },
   ].filter(item => item.status !== task.status);
 
 
@@ -135,14 +135,14 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, onStatusChange, is
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onTouchMove={handleTouchMove}
-      className={`group bg-white p-4 rounded-xl shadow-sm border hover:shadow-md transition-all duration-300 active:scale-[0.98] relative 
+      className={`group bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border hover:shadow-md transition-all duration-300 active:scale-[0.98] relative 
         ${isOverlay 
           ? 'cursor-hand-grab rotate-2 scale-105 shadow-2xl ring-2 ring-indigo-500/20 border-indigo-500/40 z-50 !opacity-100' 
           : 'cursor-hand'
         }
         ${isDone 
-            ? 'border-green-200/60 bg-green-50/20' 
-            : 'border-gray-200/80'
+            ? 'border-green-200/60 dark:border-green-800/60 bg-green-50/20 dark:bg-green-900/20' 
+            : 'border-gray-200/80 dark:border-gray-700/80'
         }
         ${showDoneAnimation ? 'scale-105 ring-4 ring-green-400/20 z-10' : ''}
       `}
@@ -150,7 +150,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, onStatusChange, is
       {/* Context Menu */}
       {showContextMenu && (
         <div 
-          className="absolute z-50 bg-white rounded-xl shadow-xl border border-gray-200 py-1 min-w-[180px] animate-in fade-in zoom-in-95 duration-150"
+          className="absolute z-50 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 py-1 min-w-[180px] animate-in fade-in zoom-in-95 duration-150"
           style={{ 
             left: Math.min(menuPosition.x, 100), 
             top: menuPosition.y,
@@ -168,13 +168,13 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, onStatusChange, is
               {item.label}
             </button>
           ))}
-          <div className="border-t border-gray-100 my-1" />
+          <div className="border-t border-gray-100 dark:border-gray-700 my-1" />
           <button
             onClick={() => {
               onArchive(task.id);
               setShowContextMenu(false);
             }}
-            className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 text-red-600 hover:bg-red-50 transition-colors"
+            className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/50 transition-colors"
           >
             <ArchiveBoxIcon size={16} />
             Archive
@@ -184,7 +184,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, onStatusChange, is
 
       {/* Visual completion indicator overlay on pop */}
       {showDoneAnimation && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-[1px] rounded-xl z-20 animate-pulse">
+          <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-gray-800/50 backdrop-blur-[1px] rounded-xl z-20 animate-pulse">
             <CheckCircle2 className="text-green-500 w-12 h-12 drop-shadow-sm" />
           </div>
       )}
@@ -199,18 +199,18 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, onStatusChange, is
             e.stopPropagation();
             onArchive(task.id);
           }}
-          className="text-gray-300 hover:text-indigo-500 transition-colors p-1 -mr-1 -mt-1 z-10"
+          className="text-gray-300 dark:text-gray-600 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors p-1 -mr-1 -mt-1 z-10"
           title="Archive Task"
         >
           <ArchiveBoxIcon size={16} />
         </button>
       </div>
 
-      <h3 className={`font-semibold mb-1.5 text-sm leading-snug transition-all duration-300 ${isDone ? 'line-through text-gray-400 decoration-green-500/50' : 'text-gray-900'}`}>
+      <h3 className={`font-semibold mb-1.5 text-sm leading-snug transition-all duration-300 ${isDone ? 'line-through text-gray-400 dark:text-gray-500 decoration-green-500/50' : 'text-gray-900 dark:text-gray-100'}`}>
         {task.title}
       </h3>
       
-      <p className={`text-gray-500 text-xs line-clamp-3 mb-3 leading-relaxed ${isDone ? 'opacity-60' : ''}`}>
+      <p className={`text-gray-500 dark:text-gray-400 text-xs line-clamp-3 mb-3 leading-relaxed ${isDone ? 'opacity-60' : ''}`}>
         {task.description}
       </p>
 
@@ -219,13 +219,13 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, onStatusChange, is
       {(task.blockers?.length > 0 || task.dependencies?.length > 0) && (
         <div className={`mb-3 space-y-2 ${isDone ? 'opacity-40 grayscale' : ''}`}>
           {task.blockers?.map((b, idx) => (
-             <div key={`blocker-${idx}`} className="flex items-start gap-1.5 text-xs text-red-700 bg-red-50 px-2 py-1.5 rounded-md border border-red-100/50">
+             <div key={`blocker-${idx}`} className="flex items-start gap-1.5 text-xs text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-1.5 rounded-md border border-red-100/50 dark:border-red-800/50">
                <ShieldAlert size={12} className="shrink-0 mt-0.5 text-red-500" />
                <span className="font-medium">{b}</span>
              </div>
           ))}
           {task.dependencies?.map((d, idx) => (
-             <div key={`dep-${idx}`} className="flex items-start gap-1.5 text-xs text-amber-700 bg-amber-50 px-2 py-1.5 rounded-md border border-amber-100/50">
+             <div key={`dep-${idx}`} className="flex items-start gap-1.5 text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-1.5 rounded-md border border-amber-100/50 dark:border-amber-800/50">
                <Clock size={12} className="shrink-0 mt-0.5 text-amber-500" />
                <span>Waiting: {d}</span>
              </div>
@@ -233,19 +233,19 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, onStatusChange, is
         </div>
       )}
 
-      <div className="flex items-center justify-between mt-auto pt-2.5 border-t border-gray-50">
+      <div className="flex items-center justify-between mt-auto pt-2.5 border-t border-gray-50 dark:border-gray-700">
         <div className={`flex gap-1.5 flex-wrap ${isDone ? 'opacity-40' : ''}`}>
           {task.tags.slice(0, 3).map((tag, index) => (
-            <span key={index} className="flex items-center text-[10px] font-medium text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-md">
+            <span key={index} className="flex items-center text-[10px] font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded-md">
               <Tag size={9} className="mr-1 opacity-70" />
               {tag}
             </span>
           ))}
           {task.tags.length > 3 && (
-             <span className="text-[10px] text-gray-400 pl-1">+{task.tags.length - 3}</span>
+             <span className="text-[10px] text-gray-400 dark:text-gray-500 pl-1">+{task.tags.length - 3}</span>
           )}
         </div>
-        <div className="text-gray-300 shrink-0 pl-2">
+        <div className="text-gray-300 dark:text-gray-600 shrink-0 pl-2">
            {task.status === 'Blocked' && !isDone && <AlertCircle size={16} className="text-amber-500" />}
            {isDone && <CheckCircle2 size={16} className="text-green-400" />}
         </div>

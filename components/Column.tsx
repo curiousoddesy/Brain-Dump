@@ -24,20 +24,20 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, onArchiveTask, onStat
 
   const getHeaderColor = () => {
     switch (id) {
-      case Status.BLOCKED: return 'text-amber-700';
-      case Status.DONE: return 'text-green-700';
-      case Status.IN_PROGRESS: return 'text-blue-700';
-      default: return 'text-gray-700';
+      case Status.BLOCKED: return 'text-amber-700 dark:text-amber-400';
+      case Status.DONE: return 'text-green-700 dark:text-green-400';
+      case Status.IN_PROGRESS: return 'text-blue-700 dark:text-blue-400';
+      default: return 'text-gray-700 dark:text-gray-300';
     }
   }
 
   const getBgColor = () => {
     switch (id) {
-      case Status.TODO: return 'bg-gray-100/70';
-      case Status.IN_PROGRESS: return 'bg-blue-50/60';
-      case Status.BLOCKED: return 'bg-amber-50/60';
-      case Status.DONE: return 'bg-green-50/60';
-      default: return 'bg-gray-100/50';
+      case Status.TODO: return 'bg-gray-100/70 dark:bg-gray-800/70';
+      case Status.IN_PROGRESS: return 'bg-blue-50/60 dark:bg-blue-900/30';
+      case Status.BLOCKED: return 'bg-amber-50/60 dark:bg-amber-900/30';
+      case Status.DONE: return 'bg-green-50/60 dark:bg-green-900/30';
+      default: return 'bg-gray-100/50 dark:bg-gray-800/50';
     }
   };
 
@@ -61,14 +61,14 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, onArchiveTask, onStat
           {onClearColumn && tasks.length > 0 && (
             <button
               onClick={onClearColumn}
-              className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-indigo-500 hover:text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded-md transition-colors border border-indigo-100"
+              className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 bg-indigo-50 dark:bg-indigo-900/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/70 px-2 py-1 rounded-md transition-colors border border-indigo-100 dark:border-indigo-800"
               title="Archive All"
             >
               <ArchiveBoxIcon size={10} />
               Archive All
             </button>
           )}
-          <span className="text-xs font-medium text-gray-500 bg-white/80 backdrop-blur px-2 py-0.5 rounded-full shadow-sm">
+          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-white/80 dark:bg-gray-800/80 backdrop-blur px-2 py-0.5 rounded-full shadow-sm">
             {tasks.length}
           </span>
         </div>
@@ -82,8 +82,8 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, onArchiveTask, onStat
         ref={setNodeRef}
         className={`rounded-2xl p-2.5 space-y-3 backdrop-blur-sm shadow-inner transition-all duration-200 min-h-[100px] 
           ${isOver
-            ? 'bg-indigo-50/90 border-2 border-dashed border-indigo-400/60 shadow-[inset_0_0_12px_rgba(99,102,241,0.1)]'
-            : `${getBgColor()} border border-white/50`
+            ? 'bg-indigo-50/90 dark:bg-indigo-900/50 border-2 border-dashed border-indigo-400/60 shadow-[inset_0_0_12px_rgba(99,102,241,0.1)]'
+            : `${getBgColor()} border border-white/50 dark:border-gray-700/50`
           }
         `}
       >
@@ -94,13 +94,13 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, onArchiveTask, onStat
         </SortableContext>
 
         {tasks.length === 0 && !isOver && (
-          <div className="h-24 md:h-32 flex items-center justify-center text-gray-400 text-sm border-2 border-dashed border-gray-300/50 rounded-xl m-1">
+          <div className="h-24 md:h-32 flex items-center justify-center text-gray-400 dark:text-gray-500 text-sm border-2 border-dashed border-gray-300/50 dark:border-gray-600/50 rounded-xl m-1">
             Empty
           </div>
         )}
 
         {tasks.length === 0 && isOver && (
-          <div className="h-24 md:h-32 flex items-center justify-center text-indigo-400 text-sm border-2 border-dashed border-indigo-300/50 rounded-xl m-1 bg-indigo-50/50">
+          <div className="h-24 md:h-32 flex items-center justify-center text-indigo-400 text-sm border-2 border-dashed border-indigo-300/50 rounded-xl m-1 bg-indigo-50/50 dark:bg-indigo-900/30">
             Drop here
           </div>
         )}

@@ -26,6 +26,16 @@
 
     <title>Brain Dump</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+      }
+      // Apply dark mode immediately to prevent flash
+      if (localStorage.getItem('braindump-darkmode') === 'true' || 
+          (!localStorage.getItem('braindump-darkmode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
       body {
@@ -35,6 +45,12 @@
         -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
         -webkit-touch-callout: none; /* Disable callout on long press */
         padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        transition: background-color 0.2s ease;
+      }
+      
+      .dark body, html.dark body {
+        background-color: #1a1a1a;
+        color: #e5e5e5;
       }
       
       /* iOS standalone mode adjustments */

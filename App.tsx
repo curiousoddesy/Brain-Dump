@@ -16,6 +16,7 @@ import {
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import ArchiveBoxIcon from './components/ArchiveBoxIcon';
 import BrainDumpIcon from './components/BrainDumpIcon';
+import DarkModeToggle from './components/DarkModeToggle';
 import confetti from 'canvas-confetti';
 import { User } from 'firebase/auth';
 
@@ -117,6 +118,28 @@ export default function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isClearDoneModalOpen, setIsClearDoneModalOpen] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  
+  // Dark mode state
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('braindump-darkmode');
+      if (saved !== null) return saved === 'true';
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
+  });
+
+  // Apply dark mode class to document
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('braindump-darkmode', String(isDarkMode));
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => setIsDarkMode(prev => !prev);
 
   // Check for app updates
   useEffect(() => {
@@ -446,13 +469,13 @@ export default function App() {
   const archivedTasks = tasks.filter(t => t.isArchived);
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] text-gray-900 flex flex-col">
+    <div className="min-h-screen bg-[#F5F5F7] dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100 flex flex-col transition-colors duration-200">
       
       {/* Top Navigation Bar */}
-      <header className="h-14 bg-white/90 backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-4 z-10 shrink-0 transition-all duration-200">
+      <header className="h-14 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 z-10 shrink-0 transition-all duration-200">
         <div className="flex items-center gap-2.5">
           <Logo className="w-8 h-8" />
-          <h1 className="font-bold text-base tracking-tight text-gray-800">Brain Dump</h1>
+          <h1 className="font-bold text-base tracking-tight text-gray-800 dark:text-gray-100">Brain Dump</h1>
         </div>
 
         <div className="flex items-center gap-2">
@@ -464,9 +487,11 @@ export default function App() {
             lastSynced={lastSynced}
           />
 
+          <DarkModeToggle isDark={isDarkMode} onToggle={toggleDarkMode} />
+
           <button 
             onClick={() => setIsArchiveModalOpen(true)}
-            className="p-2 hover:bg-gray-100 rounded-full text-gray-500 hover:text-indigo-600 transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
             title="View Archives"
           >
             <ArchiveBoxIcon size={20} />
@@ -474,7 +499,7 @@ export default function App() {
 
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-black hover:bg-gray-800 text-white px-3.5 py-1.5 rounded-full font-medium text-xs flex items-center gap-1.5 shadow-lg shadow-gray-300/50 transition-all active:scale-95"
+            className="bg-black dark:bg-indigo-600 hover:bg-gray-800 dark:hover:bg-indigo-700 text-white px-3.5 py-1.5 rounded-full font-medium text-xs flex items-center gap-1.5 shadow-lg shadow-gray-300/50 dark:shadow-none transition-all active:scale-95"
           >
             <BrainDumpIcon size={14} />
             <span className="hidden sm:inline">New Task</span>
@@ -490,7 +515,7 @@ export default function App() {
         - Laptop: Horizontal layout with internal column scrolling, page scrolls if needed.
       */}
       <main className="flex-1 overflow-auto relative">
-        <div className="min-h-full scroll-smooth bg-[#F5F5F7] custom-scrollbar">
+        <div className="min-h-full scroll-smooth bg-[#F5F5F7] dark:bg-[#1a1a1a] custom-scrollbar transition-colors duration-200">
           <DndContext
             sensors={sensors}
             collisionDetection={closestCorners}
