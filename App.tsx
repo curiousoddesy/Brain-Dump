@@ -14,7 +14,8 @@ import {
   DragEndEvent,
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { Plus, BrainCircuit, History } from 'lucide-react';
+import ArchiveBoxIcon from './components/ArchiveBoxIcon';
+import BrainDumpIcon from './components/BrainDumpIcon';
 import confetti from 'canvas-confetti';
 import { User } from 'firebase/auth';
 
@@ -468,14 +469,14 @@ export default function App() {
             className="p-2 hover:bg-gray-100 rounded-full text-gray-500 hover:text-indigo-600 transition-colors"
             title="View Archives"
           >
-            <History size={20} />
+            <ArchiveBoxIcon size={20} />
           </button>
 
           <button
             onClick={() => setIsModalOpen(true)}
             className="bg-black hover:bg-gray-800 text-white px-3.5 py-1.5 rounded-full font-medium text-xs flex items-center gap-1.5 shadow-lg shadow-gray-300/50 transition-all active:scale-95"
           >
-            <Plus size={14} />
+            <BrainDumpIcon size={14} />
             <span className="hidden sm:inline">New Task</span>
             <span className="sm:hidden">New</span>
           </button>
@@ -540,7 +541,7 @@ export default function App() {
           className="group flex items-center justify-center w-14 h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-xl shadow-indigo-200 border border-indigo-500/50 transition-all hover:scale-105 active:scale-95"
           title="Brain Dump"
         >
-          <BrainCircuit size={26} className="group-hover:animate-pulse" />
+          <BrainDumpIcon size={26} className="group-hover:animate-pulse" />
         </button>
       </div>
 

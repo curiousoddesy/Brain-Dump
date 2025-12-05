@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Task, Priority, Status } from '../types';
-import { Archive, AlertCircle, Tag, Clock, ShieldAlert, CheckCircle2, Play, Ban, Check } from 'lucide-react';
+import { AlertCircle, Tag, Clock, ShieldAlert, CheckCircle2, Play, Ban, Check } from 'lucide-react';
+import ArchiveBoxIcon from './ArchiveBoxIcon';
 
 interface TaskCardProps {
   task: Task;
@@ -175,7 +176,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, onStatusChange, is
             }}
             className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 text-red-600 hover:bg-red-50 transition-colors"
           >
-            <Archive size={16} />
+            <ArchiveBoxIcon size={16} />
             Archive
           </button>
         </div>
@@ -201,7 +202,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onArchive, onStatusChange, is
           className="text-gray-300 hover:text-indigo-500 transition-colors p-1 -mr-1 -mt-1 z-10"
           title="Archive Task"
         >
-          <Archive size={16} />
+          <ArchiveBoxIcon size={16} />
         </button>
       </div>
 

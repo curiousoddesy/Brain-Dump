@@ -4,7 +4,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useDroppable } from '@dnd-kit/core';
 import TaskCard from './TaskCard';
 import { Task, Status } from '../types';
-import { Archive } from 'lucide-react';
+import ArchiveBoxIcon from './ArchiveBoxIcon';
 
 interface ColumnProps {
   id: Status;
@@ -64,7 +64,7 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, onArchiveTask, onStat
               className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-indigo-500 hover:text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded-md transition-colors border border-indigo-100"
               title="Archive All"
             >
-              <Archive size={10} />
+              <ArchiveBoxIcon size={10} />
               Archive All
             </button>
           )}

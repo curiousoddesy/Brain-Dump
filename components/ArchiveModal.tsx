@@ -1,6 +1,7 @@
 import React from 'react';
-import { X, RefreshCw, Trash2, Archive } from 'lucide-react';
+import { X, RefreshCw, Trash2 } from 'lucide-react';
 import { Task } from '../types';
+import ArchiveBoxIcon from './ArchiveBoxIcon';
 
 interface ArchiveModalProps {
   isOpen: boolean;
@@ -25,7 +26,7 @@ const ArchiveModal: React.FC<ArchiveModalProps> = ({
         
         <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gray-50/80 shrink-0">
             <div className="flex items-center gap-2 text-gray-800">
-                <Archive size={20} className="text-indigo-600"/>
+                <ArchiveBoxIcon size={20} className="text-indigo-600"/>
                 <h2 className="font-semibold">Archived Tasks</h2>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full text-gray-500 transition-colors">
@@ -36,7 +37,7 @@ const ArchiveModal: React.FC<ArchiveModalProps> = ({
         <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50/30">
             {archivedTasks.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-3">
-                    <Archive size={48} className="opacity-20" />
+                    <ArchiveBoxIcon size={48} className="opacity-20" />
                     <p>No archived tasks</p>
                 </div>
             ) : (
